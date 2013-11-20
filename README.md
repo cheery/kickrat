@@ -14,6 +14,9 @@ Parsing expression grammars let you describe the syntax rules that are recognise
  * `star(pattern)` matches zero or more patterns.
  * `plus(pattern)` matches one or more patterns.
  * `near(pattern)` matches pattern that is not separated by space from the earlier pattern.
+ * `optional(pattern)` matches anyway, but if pattern matches, it grabs it.
+ * `lookahead(pattern, True)` matches if pattern matches, lookahead doesn't advance the stream.
+ * `lookahead(pattern, False)` matches if pattern does not match.
 
 Aside these combinators you need several patterns that match to input tokens. They are called terminals. You have following terminals:
 

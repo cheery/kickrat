@@ -2,11 +2,11 @@ def newline(tokens, ch):
     if ch == ' ':
         tokens.string += ch
         tokens.value  += 1
-        return self
+        return newline
     if ch == '\n':
         tokens.string += ch
         tokens.value   = 0
-        return self
+        return newline
     if ch == '#':
         tokens.string += ch
         tokens.value   = 0

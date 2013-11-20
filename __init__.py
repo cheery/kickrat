@@ -34,3 +34,8 @@ string_begin  = TokenMatch('string_begin')
 string_data   = TokenMatch('string_data')
 string_escape = TokenMatch('string_escape')
 string_end    = TokenMatch('string_end')
+
+def parse_file(pattern, path):
+    with open(path, 'r') as fd:
+        source = fd.read()
+    return parse(pattern, source)

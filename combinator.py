@@ -118,6 +118,31 @@ class sequence(object):
     def __repr__(self):
         return 'sequence%x' % id(self)
 
+class lookahead(object):
+    def __init__(self, subject, positive=True):
+        self.subject = subject
+        self.positive = positive
+
+    def match(self, source, index):
+        k, res = match(self.subject, source, index)
+        if self.positive:
+            if k >= 0:
+                return 0, res
+        else:
+            if k < 0:
+                return 0, res
+        return -1, None
+
+class optional(object):
+    def __init__(self, subject):
+        self.subject = subject
+
+    def match(self, source, index):
+        k, res = match(self.subject, source, index)
+        if k >= 0:
+            return k, res
+        return 0, None
+
 eof = object()
 
 def match_string(string, source, index):

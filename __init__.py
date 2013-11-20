@@ -1,4 +1,4 @@
-from kickrat.combinator import label, choice, star, plus, sequence, parse, near, eof
+from kickrat.combinator import label, choice, star, plus, sequence, lookahead, optional, parse, near, eof
 from kickrat.tokenizer import tokenize
 import re
 

@@ -28,6 +28,7 @@ def newline(tokens, ch):
 def comment(tokens, ch):
     tokens.string += ch
     if ch == '\n':
+        tokens.value = 0
         return newline
     else:
         return comment
@@ -137,7 +138,7 @@ def idle(tokens, ch, mode=None):
     if tokens.rich_depth > 0 and ch == "}":
         return rich_string
     tokens.string += ch
-    tokens.push('ident', offset=1)
+    tokens.push('symbol', offset=1)
     return idle if mode is None else mode
 
 class TokenBuffer(object):
@@ -155,6 +156,7 @@ class TokenBuffer(object):
         self.tokens.append(Token(which, self.string, self.near, self.start, self.stop+offset))
         self.near = True
         if flush:
+            self.value = 0
             self.string = ''
 
 class Token(object):
@@ -177,6 +179,9 @@ def tokenize(source):
         mode = mode(tokens, ch)
     tokens.stop = index + 1
     mode(tokens, '')
+    while tokens.indent[-1] > 0:
+        tokens.indent.pop(-1)
+        tokens.push('dedent', False)
     return tokens.tokens
 
 def tokenize_file(path):

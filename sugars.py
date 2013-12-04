@@ -42,8 +42,10 @@ class Join(ListTerminal):
         return stream.store(self, pos, output)
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         output = List()
         output.include(self.pattern.force(stream, root, seed))
@@ -90,8 +92,10 @@ class Many(ListTerminal):
         return stream.store(self, pos, output)
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         output = List()
         output.include(self.pattern.force(stream, root, seed))
@@ -128,8 +132,10 @@ class Plus(ListTerminal):
         return stream.store(self, pos, output)
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         output = List()
         output.include(self.pattern.force(stream, root, seed))
@@ -163,8 +169,10 @@ class Opt(NonTerminal):
         return stream.store(self, pos, output)
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         output = List()
         output.include(self.pattern.force(stream, root, seed))
@@ -199,8 +207,10 @@ class Near(NonTerminal):
         return stream.store(self, pos, self.pattern.match(stream))
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         if stream.eof:
             raise Backtrack
@@ -237,8 +247,10 @@ class Far(NonTerminal):
         return stream.store(self, pos, self.pattern.match(stream))
 
     def force(self, stream, root, seed):
-        if pattern is root:
+        if self.pattern is root:
             return stream.plant(seed)
+        if self.pattern.recursive:
+            raise Backtrack
         pos = stream.pos
         if stream.eof:
             raise Backtrack

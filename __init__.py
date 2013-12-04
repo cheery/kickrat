@@ -46,15 +46,19 @@ class PriorityHeap(object):
             self.patterns.append((priority, pattern))
 
     def __getitem__(self, idx):
-        if idx in self.slicecache:
-            return self.slicecache[idx]
-        self.slicecache[idx] = res = HeapSlice(self, idx)
+        if isinstance(idx, slice):
+            key = ('slice', idx.start, idx.stop)
+        else:
+            key = idx
+        if key in self.slicecache:
+            return self.slicecache[key]
+        self.slicecache[key] = res = HeapSlice(self, idx)
         return res
 
     def shed(self, mapping):
         self.patterns.sort(key=lambda x: -x[0])
         slots = []
-        for item in self.slicecache:
+        for item in self.slicecache.values():
             item.patterns = []
             slots.append(item)
         patterns = []
@@ -63,13 +67,14 @@ class PriorityHeap(object):
             pattern = shed(pattern, mapping)
             patterns.append(pattern)
             for slot in slots:
-                slot.slot(pattern)
+                slot.slot(priority, pattern)
         return out
 
 class Grammar(object):
     def __init__(self, pattern):
         self.pattern = shed(pattern, {})
         self.pattern.spinevisit(set(), set())
+        print self.pattern
 
     def parse(self, source):
         return parse(self.pattern, source)
@@ -78,7 +83,7 @@ def declare():
     return PriorityHeap()
 
 # fix this stuff later...
-def print_error(stream):
+def print_error(stream, source):
     current = stream.get(stream.extreme)
     pos = len(source) if current is None else current.start
     print ', '.join(stream.failures), 'at %i' % pos
@@ -88,10 +93,10 @@ def parse(pattern, source):
     try:
         output = pattern.match(stream)
         if not stream.eof:
-            print_error(stream)
+            print_error(stream, source)
         return output
     except Backtrack:
-        print_error(stream)
+        print_error(stream, source)
 
 
 def sequence(*patterns, **kw):

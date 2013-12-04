@@ -11,7 +11,8 @@ class Choice(NonTerminal):
         self.patterns = patterns
 
     def __repr__(self):
-        return 'choice%r' % (self.patterns,)
+        prefix = '!' if self.recursive else ''
+        return prefix + 'choice%r' % (self.patterns,)
 
     def __getitem__(self, index):
         return self.patterns[index]
@@ -37,6 +38,8 @@ class Choice(NonTerminal):
                 return stream.plant(seed)
             if isinstance(pattern, Terminal):
                 continue
+            if pattern.recursive:
+                continue
             try:
                 return stream.store(self, pos, pattern.force(stream, root, seed))
             except Backtrack:
@@ -61,7 +64,8 @@ class Sequence(NonTerminal):
         self.name = name
 
     def __repr__(self):
-        return 'sequence%r' % (self.patterns,)
+        prefix = '!' if self.recursive else ''
+        return prefix + 'sequence%r' % (self.patterns,)
 
     def __getitem__(self, index):
         return self.patterns[index]
@@ -85,6 +89,8 @@ class Sequence(NonTerminal):
         output = List(self.name)
         if first is root:
             output.include(stream.plant(seed))
+        elif first.recursive:
+            raise Backtrack
         else:
             output.include(first.force(stream, root, seed))
         for pattern in patterns:
